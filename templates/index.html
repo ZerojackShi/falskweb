@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileProcess</title>
+    <style>
+        .progress {
+            width: 100%;
+            background-color: #ddd;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 30px;
+            background-color: #4CAF50;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .drop-zone {
+            height: 300px;
+            width: 100%;
+            background-color: #f0f0f0; /* 灰色背景 */
+            border: 2px dashed #ccc; /* 虚线边框 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* 当文件被拖拽到区域上时的样式 */
+        .drop-zone.highlight {
+            background-color: #e0e0e0; /* 浅灰色背景 */
+        }
+    </style>
+</head>
+<body>
+    <h1>选择需要处理的文件</h1>
+    <div id="drop-zone" class="drop-zone">
+        <p>拖动或点击选择文件</p>
+        <input type="file" id="file-input-drop" name="file" multiple style="display: none;">
+    </div>  
+    <!-- <button onclick="uploadFiles()">Upload</button> -->
+    <ul id="file-list"></ul>
+    <script src="main.js"></script>
+</body>
+</html>

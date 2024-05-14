@@ -21,6 +21,22 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 # 文件上传状态字典
 upload_statuses = {}
 
+def delete_old_files():
+    upload_folder = app.config['UPLOAD_FOLDER']
+    files = os.listdir(upload_folder)
+    if len(files) > 50:
+        # 按时间排序文件
+        files.sort(key=lambda x: os.path.getmtime(os.path.join(upload_folder, x)))
+        # 删除最旧的文件，直到文件数量减少到50个
+        while len(files) > 50:
+            file_to_delete = os.path.join(upload_folder, files.pop(0))
+            os.remove(file_to_delete)
+
+# 定时检查文件的线程函数
+def check_files_periodically(interval):
+    while True:
+        time.sleep(interval)
+        delete_old_files()
 # 锁定对象，用于同步上传状态
 upload_lock = threading.Lock()
 # 获取文件名的后缀
@@ -50,7 +66,11 @@ def upload():
             file.save(file_path)
         except Exception as e:
             os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-            file.save(file_path)
+            try:
+                file.save(file_path)
+            except Exception as e:
+                logger.error(e)
+                return 'Error occurred while saving file', 500
         
         # 使用线程来处理文件上传，以避免阻塞主线程
         # threading.Thread(target=upload_file, args=(file_path, target_path)).start()
@@ -102,6 +122,7 @@ def download(uuid, filename):
         return 'Error occurred while downloading file', 500
 
 if __name__ == '__main__':
-    logger.info("start")
+    delete_old_files()
+    # 启动定时检查文件的线程
+    threading.Thread(target=check_files_periodically, args=(3600,)).start()
     app.run(debug=True, port=5984)
-    logger.info("end")
